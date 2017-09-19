@@ -26,39 +26,6 @@ class FileSystemManager:
                         logging.error(
                             "Could not remove resource: Directory [%s].", os.path.abspath(directory))
 
-    def extract_archive(self, archive):
-        """Extract compressed archives tar.gz"""
-
-        self.archive_dir = archive.split('.')[0]
-
-        if not os.path.exists(self.archive_dir):
-            logging.info("Extracting archive %s to %s", archive, os.path.abspath(self.archive_dir))
-
-            if archive.lower().endswith('.tar.gz'):
-                tar = tarfile.open(archive, "r:gz")
-            else:
-                logging.error("File extension not currently supported.")
-                return
-
-            tar.extractall()
-            tar.close()
-
-        return self.archive_dir
-
-    def remove_files_except(self, extension):
-        """Removes all files not ending in extension"""
-
-        for root, dirs, files in os.walk(self.archive_dir):
-            for current_file in files:
-
-                if not current_file.lower().endswith(extension):
-
-                    try:
-                        logging.debug("Removing resource: File [%s]", os.path.join(root, current_file))
-                        os.remove(os.path.join(root, current_file))
-                    except OSError:
-                        logging.error("Could not remove resource: File [%s]", os.path.join(root, current_file))
-
     def data_science_fs(self, category0, category1):
         """Makes data science file system for ML modelling"""
 
