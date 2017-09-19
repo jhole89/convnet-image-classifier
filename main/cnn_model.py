@@ -1,7 +1,7 @@
 import os
 import logging
 import tensorflow as tf
-from cnn_image_classifier.image_loading import read_img_sets
+from main.image_loading import read_img_sets
 
 
 def flat_img_shape(img_size, channels):

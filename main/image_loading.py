@@ -4,7 +4,7 @@ import glob
 import numpy as np
 import logging
 from sklearn.utils import shuffle
-from cnn_image_classifier.DataSet import DataSet
+from main.DataSet import DataSet
 
 
 def load_data(image_dir, image_size):
