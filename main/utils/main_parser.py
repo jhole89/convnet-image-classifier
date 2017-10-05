@@ -16,10 +16,10 @@ class MainParser(ArgumentParser):
         return self
 
     @staticmethod
-    def valid_path(path):
-        if not os.path.exists(path):
+    def valid_path(value):
+        if not os.path.exists(value):
             raise OSError
-        return path
+        return value
 
     @staticmethod
     def positive_int(value):
