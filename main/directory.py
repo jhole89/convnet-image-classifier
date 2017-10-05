@@ -2,41 +2,27 @@ import os
 import re
 import shutil
 import logging
-import tarfile
 from random import random
 
 
-class FileSystemManager:
+class Directory:
 
-    def __init__(self, source_dir=None, model_dir=None):
-        self.source_dir = source_dir
-        self.model_dir = model_dir
-        self.archive_dir = None
+    def __init__(self, directory='tmp'):
+        self.directory = directory
 
-    def clean_run(self):
-        """Remove model and data dirs for a clean run"""
+    def remove(self):
 
-        for directory in [self.model_dir, self.source_dir]:
-            if directory:
-                if os.path.exists(directory):
-                    try:
-                        logging.info("Removing resource: Directory [%s].", os.path.abspath(directory))
-                        shutil.rmtree(directory)
-                    except OSError:
-                        logging.error(
-                            "Could not remove resource: Directory [%s].", os.path.abspath(directory))
+        if self.directory:
+            if os.path.exists(self.directory):
 
-    def data_science_fs(self, category0, category1):
-        """Makes data science file system for ML modelling"""
+                try:
+                    logging.warning(
+                        "Removing resource: Directory [%s].", os.path.abspath(self.directory))
+                    shutil.rmtree(self.directory)
 
-        for new_dir in ['train', 'predict']:
-            for new_category in [category0, category1]:
-
-                abspath_dir = os.path.abspath(os.path.join(self.source_dir, new_dir, new_category))
-
-                logging.info(
-                    "Creating resource: Directory [%s]", abspath_dir)
-                os.makedirs(abspath_dir)
+                except OSError:
+                    logging.error(
+                        "Could not remove resource: Directory [%s].", os.path.abspath(self.directory))
 
     def organise_files(self, directory, category_rules):
         """Flattens directory tree to single level"""
