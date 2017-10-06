@@ -14,6 +14,8 @@ class MainParser(ArgumentParser):
                           help="Directory to store model and logs")
         self.add_argument("-i", "--iterations", type=self.positive_int,
                           default=2000, help="Number of training iterations")
+        self.add_argument("-v", "--verbosity", type=str,
+                          default="info", help="Verbosity level")
         return self
 
     @staticmethod
