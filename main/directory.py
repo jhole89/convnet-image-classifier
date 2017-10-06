@@ -7,39 +7,39 @@ from random import random
 
 class Directory:
 
-    def __init__(self, directory='tmp'):
-        self.directory = directory
+    def __init__(self, path='tmp'):
+        self.path = path
 
     def remove(self):
 
-        if self.directory:
-            if os.path.exists(self.directory):
+        if self.path:
+            if os.path.exists(self.path):
 
                 try:
                     logging.warning(
-                        "Removing resource: Directory [%s].", os.path.abspath(self.directory))
-                    shutil.rmtree(self.directory)
+                        "Removing resource: Directory [%s].", os.path.abspath(self.path))
+                    shutil.rmtree(self.path)
 
                 except OSError:
                     logging.error(
-                        "Could not remove resource: Directory [%s].", os.path.abspath(self.directory))
+                        "Could not remove resource: Directory [%s].", os.path.abspath(self.path))
 
     def create(self):
 
-        if self.directory:
+        if self.path:
 
-            if os.path.exists(self.directory):
+            if os.path.exists(self.path):
                 logging.debug(
-                    "Directory [%s] already exists. Skipping create.", os.path.abspath(self.directory))
+                    "Directory [%s] already exists. Skipping create.", os.path.abspath(self.path))
 
             else:
                 try:
-                    logging.debug("Generating directory [%s].", os.path.abspath(self.directory))
-                    os.mkdir(self.directory)
+                    logging.debug("Generating directory [%s].", os.path.abspath(self.path))
+                    os.mkdir(self.path)
 
                 except OSError:
                     logging.error(
-                        "Could not generate directory [%s].", os.path.abspath(self.directory))
+                        "Could not generate directory [%s].", os.path.abspath(self.path))
 
     def organise_files(self, directory, category_rules):
         """Flattens directory tree to single level"""
