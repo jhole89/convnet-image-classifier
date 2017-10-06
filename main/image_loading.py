@@ -4,7 +4,7 @@ import glob
 import numpy as np
 import logging
 from sklearn.utils import shuffle
-from main.DataSet import DataSet
+from main.dataset import DataSet
 
 
 def load_data(image_dir, image_size):

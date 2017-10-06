@@ -9,12 +9,14 @@ if __name__ == '__main__':
     main_parser = MainParser().register_args()
     args = main_parser.parse_args()
 
-    if args.clean:
+    model_dir = Directory(args.model_dir)
 
-        model_dir = Directory(args.model_dir)
+    if args.clean:
         model_dir.remove()
 
-        # file_manager.organise_files(extract_dir, category_rules={'benign': 'SOB_B_.*.png', 'malignant': 'SOB_M_.*.png'})
+    model_dir.create()
+
+    # file_manager.organise_files(extract_dir, category_rules={'benign': 'SOB_B_.*.png', 'malignant': 'SOB_M_.*.png'})
 
     train(args.img_dir, args.model_dir)
 

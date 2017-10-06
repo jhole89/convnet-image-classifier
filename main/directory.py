@@ -24,6 +24,23 @@ class Directory:
                     logging.error(
                         "Could not remove resource: Directory [%s].", os.path.abspath(self.directory))
 
+    def create(self):
+
+        if self.directory:
+
+            if os.path.exists(self.directory):
+                logging.debug(
+                    "Directory [%s] already exists. Skipping create.", os.path.abspath(self.directory))
+
+            else:
+                try:
+                    logging.debug("Generating directory [%s].", os.path.abspath(self.directory))
+                    os.mkdir(self.directory)
+
+                except OSError:
+                    logging.error(
+                        "Could not generate directory [%s].", os.path.abspath(self.directory))
+
     def organise_files(self, directory, category_rules):
         """Flattens directory tree to single level"""
 
