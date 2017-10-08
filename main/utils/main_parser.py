@@ -9,7 +9,7 @@ class MainParser(ArgumentParser):
 
     def register_args(self):
 
-        self.add_argument("img_dir", type=self.valid_path, help="Directory of images")
+        self.add_argument("img_dir", type=self.valid_path, help="Path of images")
 
         self.add_argument("-m", "--mode", type=self.mode_type,
                           default="predict", help="train or predict mode")
