@@ -11,9 +11,9 @@ class ConvNet:
         self.model_dir = model_dir
         self.image_dir = image_dir
 
-        self.checkpoint_dir = os.path.join(os.path.abspath(model_dir), 'tensorflow', 'cnn', 'model')
+        self.checkpoint_dir = os.path.join(os.path.abspath(model_dir), 'tensorflow', 'model')
         self.checkpoint_full_path = os.path.join(self.checkpoint_dir, 'model.ckpt')
-        self.log_dir = os.path.join(os.path.abspath(self.model_dir), 'tensorflow', 'cnn', 'logs', 'cnn_with_summaries')
+        self.log_dir = os.path.join(os.path.abspath(self.model_dir), 'tensorflow', 'logs', 'cnn_with_summaries')
 
         self.img_size = img_size
         self.neurons = 2 * img_size
@@ -264,7 +264,7 @@ class ConvNet:
 
     def predict(self):
 
-        data, category_ref = read_img_sets(self.image_dir + '/predict', self.img_size)
+        data, category_ref = read_img_sets(self.image_dir, self.img_size)
 
         flat_img_size = self._flat_img_shape()
 

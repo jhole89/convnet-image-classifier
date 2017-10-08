@@ -14,13 +14,22 @@ if __name__ == '__main__':
     model_dir = Directory(args.model_dir)
     image_dir = Directory(args.img_dir)
 
-    if args.clean:
-        model_dir.remove()
+    img_size = 64
+    channels = 3
+    filter_size = 3
 
-    model_dir.create()
+    if args.mode == 'train':
 
-    model = ConvNet(model_dir.path, image_dir.path, img_size=64, channels=3, batch_size=1, filter_size=3)
+        if args.clean:
+            model_dir.remove()
 
-    model.train(training_epochs=50)
+        model_dir.create()
 
+        model = ConvNet(model_dir.path, image_dir.path, img_size, channels, filter_size, batch_size=1)
+
+        model.train(training_epochs=args.iterations)
+
+    else:
+        model = ConvNet(model_dir.path, image_dir.path, img_size, channels, filter_size, batch_size=1)
+        model.predict()
     # prediction, ground_truth = model.predict(args.img_dir, args.model_dir)
