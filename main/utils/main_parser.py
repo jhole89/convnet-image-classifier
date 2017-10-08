@@ -9,14 +9,14 @@ class MainParser(ArgumentParser):
 
     def register_args(self):
         self.add_argument("img_dir", type=self.valid_path, help="Directory of images")
-        self.add_argument("-m", "--mode", type=self.train_or_predict,
+        self.add_argument("-m", "--mode", type=self.mode_type,
                           default="predict", help="train or predict mode")
         self.add_argument("-c", "--clean", help="Retrain model from scratch", action='store_true')
         self.add_argument("-d", "--model_dir", default=os.path.abspath('tmp'),
                           help="Directory to store/access model and logs")
         self.add_argument("-i", "--iterations", type=self.positive_int,
                           default=50, help="Number of iterations used in train mode")
-        self.add_argument("-v", "--verbosity", type=str,
+        self.add_argument("-v", "--verbosity", type=self.log_levels,
                           default="info", help="Verbosity level")
         return self
 
@@ -35,8 +35,15 @@ class MainParser(ArgumentParser):
         return integer_val
 
     @staticmethod
-    def train_or_predict(value):
+    def mode_type(value):
         value = str(value).lower()
         if value not in ['train', 'predict']:
+            raise ValueError
+        return value
+
+    @staticmethod
+    def log_levels(value):
+        value = str(value).upper()
+        if value not in ['FATAL', 'ERROR', 'WARN', 'INFO', 'DEBUG']:
             raise ValueError
         return value
