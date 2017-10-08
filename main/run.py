@@ -25,7 +25,7 @@ if __name__ == '__main__':
 
         model_dir.create()
 
-        model = ConvNet(model_dir.path, image_dir.path, img_size, channels, filter_size, batch_size=1)
+        model = ConvNet(model_dir.path, image_dir.path, img_size, channels, filter_size, batch_size=args.batch_size)
 
         model.train(training_epochs=args.iterations)
 

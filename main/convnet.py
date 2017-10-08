@@ -96,7 +96,7 @@ class ConvNet:
         logging.info(msg.format(epoch, acc, val_loss))
 
         save_path = saver.save(session, checkpoint_path)
-        logging.debug("Creating resource: CNN Model [%s]", save_path)
+        logging.debug("Saving ConvNet Model: [%s]", save_path)
 
     @staticmethod
     def _variables(flat_img_size, num_classes):
