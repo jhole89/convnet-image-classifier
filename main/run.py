@@ -1,14 +1,15 @@
 from main.utils.logger import Logger
 from main.utils.main_parser import MainParser
 from main.directory import Directory
-from main.cnn_model import ConvNet
+from main.convnet import ConvNet
 
 if __name__ == '__main__':
 
     main_parser = MainParser().register_args()
     args = main_parser.parse_args()
 
-    Logger(log_level=args.verbosity)
+    logger = Logger(log_level=args.verbosity)
+    logger.set_log_level()
 
     model_dir = Directory(args.model_dir)
     image_dir = Directory(args.img_dir)
@@ -18,8 +19,8 @@ if __name__ == '__main__':
 
     model_dir.create()
 
-    model = ConvNet(model_dir, image_dir, img_size=64, channels=3, batch_size=128)
+    model = ConvNet(model_dir.path, image_dir.path, img_size=64, channels=3, batch_size=1, filter_size=3)
 
     model.train(training_epochs=50)
 
-    prediction, ground_truth = model.predict(args.img_dir, args.model_dir)
+    # prediction, ground_truth = model.predict(args.img_dir, args.model_dir)

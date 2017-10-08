@@ -6,16 +6,20 @@ from main.image_loading import read_img_sets
 
 class ConvNet:
 
-    def __init__(self, model_dir, image_dir, img_size, channels, batch_size):
+    def __init__(self, model_dir, image_dir, img_size, channels, filter_size, batch_size):
 
         self.model_dir = model_dir
         self.image_dir = image_dir
+
         self.checkpoint_dir = os.path.join(os.path.abspath(model_dir), 'tensorflow', 'cnn', 'model')
         self.checkpoint_full_path = os.path.join(self.checkpoint_dir, 'model.ckpt')
         self.log_dir = os.path.join(os.path.abspath(self.model_dir), 'tensorflow', 'cnn', 'logs', 'cnn_with_summaries')
+
         self.img_size = img_size
-        self.channels = channels
         self.neurons = 2 * img_size
+        self.channels = channels
+        self.filter_size = filter_size
+
         self.batch_size = batch_size
 
     def _flat_img_shape(self):
@@ -41,9 +45,9 @@ class ConvNet:
     def _dropout(layer, keep_prob):
         return tf.nn.dropout(layer, keep_prob)
 
-    def _new_conv_layer(self, layer, num_input_channels, filter_size, num_filters, use_pooling=True):
+    def _new_conv_layer(self, layer, num_input_channels, num_filters, use_pooling=True):
 
-        weights = self._weight_variable(shape=[filter_size, filter_size, num_input_channels, num_filters])
+        weights = self._weight_variable(shape=[self.filter_size, self.filter_size, num_input_channels, num_filters])
         biases = self._bias_variable(shape=[num_filters])
 
         layer = self._conv2d(layer, weights) + biases
@@ -205,18 +209,18 @@ class ConvNet:
         ckpt = tf.train.get_checkpoint_state(self.checkpoint_dir)
 
         if ckpt:
-            logging.debug("Loading CNN model: [%s]", self.checkpoint_full_path)
+            logging.debug("Loading ConvNet model: [%s]", self.checkpoint_full_path)
             saver.restore(session, ckpt.model_checkpoint_path)
 
         else:
-            logging.warning("Unable to load CNN model: [%s]", self.checkpoint_full_path)
+            logging.warning("Unable to load ConvNet model: [%s]", self.checkpoint_full_path)
 
             os.makedirs(self.checkpoint_dir)
             tf.global_variables_initializer().run()
 
     def train(self, training_epochs=50):
 
-        data, category_ref = read_img_sets(self.image_dir + '/train', self.img_size, validation_size=.2)
+        data, category_ref = read_img_sets(self.image_dir, self.img_size, validation_size=.2)
 
         flat_img_size = self._flat_img_shape()
 
