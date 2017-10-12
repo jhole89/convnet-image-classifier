@@ -9,6 +9,11 @@ def image_dir():
 
 
 @pytest.fixture(scope='session')
+def model_dir():
+    return os.path.abspath(os.path.join('test', 'resources', 'model'))
+
+
+@pytest.fixture(scope='session')
 def image_size():
     return 64
 

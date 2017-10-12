@@ -11,7 +11,7 @@ class ConvNet:
         self.model_dir = model_dir
         self.image_dir = image_dir
 
-        self.checkpoint_dir = os.path.join(os.path.abspath(model_dir), 'tensorflow', 'model')
+        self.checkpoint_dir = os.path.abspath(os.path.join(model_dir, 'tensorflow', 'model'))
         self.checkpoint_full_path = os.path.join(self.checkpoint_dir, 'model.ckpt')
         self.log_dir = os.path.join(os.path.abspath(self.model_dir), 'tensorflow', 'logs', 'cnn_with_summaries')
 
