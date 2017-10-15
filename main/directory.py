@@ -1,26 +1,12 @@
 import os
-import shutil
 import logging
+from main.file import File
 
 
-class Directory:
+class Directory(File):
 
-    def __init__(self, path='tmp'):
-        self.path = path
-
-    def remove(self):
-
-        if self.path:
-            if os.path.exists(self.path):
-
-                try:
-                    logging.warning(
-                        "Removing resource: Directory [%s].", os.path.abspath(self.path))
-                    shutil.rmtree(self.path)
-
-                except OSError:
-                    logging.error(
-                        "Could not remove resource: Directory [%s].", os.path.abspath(self.path))
+    def __init__(self, path):
+        super().__init__(path)
 
     def create(self):
 
@@ -28,13 +14,13 @@ class Directory:
 
             if os.path.exists(self.path):
                 logging.debug(
-                    "Directory [%s] already exists. Skipping create.", os.path.abspath(self.path))
+                    "Directory [%s] already exists. Skipping create.", self.path)
 
             else:
                 try:
-                    logging.debug("Generating directory [%s].", os.path.abspath(self.path))
+                    logging.debug("Generating directory [%s].", self.path)
                     os.mkdir(self.path)
 
                 except OSError:
                     logging.error(
-                        "Could not generate directory [%s].", os.path.abspath(self.path))
+                        "Could not generate directory [%s].", self.path)

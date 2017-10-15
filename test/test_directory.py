@@ -4,7 +4,7 @@ from main.directory import Directory
 
 def test_directory():
 
-    test_path = os.path.join('test', 'resources', 'test_dir')
+    test_path = os.path.join('resources', 'test_dir')
 
     model_dir = Directory(test_path)
 
