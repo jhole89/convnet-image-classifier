@@ -5,12 +5,17 @@ from main.image_loading import load_data
 
 @pytest.fixture(scope='session')
 def image_dir():
-    return os.path.abspath(os.path.join('test', 'resources', 'images'))
+    return os.path.abspath(os.path.join('resources', 'images', 'training'))
+
+
+@pytest.fixture(scope='session')
+def prediction_path():
+    return os.path.abspath(os.path.join('resources', 'images', 'prediction', '1794225511_0a7ba68969.jpg'))
 
 
 @pytest.fixture(scope='session')
 def model_dir():
-    return os.path.abspath(os.path.join('test', 'resources', 'model'))
+    return os.path.abspath(os.path.join('resources', 'model'))
 
 
 @pytest.fixture(scope='session')

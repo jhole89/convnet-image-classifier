@@ -1,4 +1,20 @@
-from main.image_loading import read_img_sets
+from main.image_loading import read_img_sets, load_image
+import numpy as np
+
+
+def test_load_image(prediction_path, image_size):
+
+    images, ids, labels, cls = load_image(
+        image_path=prediction_path,
+        image_size=image_size,
+        file_index=0,
+        num_files=1,
+    )
+
+    assert np.array(images).shape == (1, image_size, image_size, 3)
+    assert ids == ['1794225511_0a7ba68969.jpg']
+    assert labels == []
+    assert cls == []
 
 
 def test_load_data(image_size, load_image_data):

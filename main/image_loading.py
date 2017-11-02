@@ -7,6 +7,43 @@ from sklearn.utils import shuffle
 from main.dataset import DataSet
 
 
+def load_image(image_path, image_size, file_index, num_files,
+               images=None, ids=None, labels=None, cls=None, category=None):
+
+    if images is None:
+        images = []
+
+    if ids is None:
+        ids = []
+
+    if labels is None:
+        labels = []
+
+    if cls is None:
+        cls = []
+
+    image_path = os.path.abspath(image_path)
+
+    logging.debug("Loading resource: Image [%s]", image_path)
+
+    image = cv2.imread(image_path)
+    image = cv2.resize(image, (image_size, image_size), cv2.INTER_LINEAR)
+    images.append(image)
+
+    if category:
+
+        label = np.zeros(num_files)
+        label[file_index] = 1.0
+        labels.append(label)
+
+        cls.append(category)
+
+    filebase = os.path.basename(image_path)
+    ids.append(filebase)
+
+    return images, ids, labels, cls
+
+
 def load_data(image_dir, image_size):
 
     images = []
@@ -20,6 +57,7 @@ def load_data(image_dir, image_size):
     logging.info("Loading resource: Images [%s]", image_dir)
 
     training_dirs = os.listdir(image_dir)
+    num_files = len(training_dirs)
 
     for category in training_dirs:
         index = training_dirs.index(category)
@@ -31,15 +69,11 @@ def load_data(image_dir, image_size):
         file_list = glob.glob(path)
 
         for file in file_list:
-            image = cv2.imread(file)
-            image = cv2.resize(image, (image_size, image_size), cv2.INTER_LINEAR)
-            images.append(image)
-            label = np.zeros(len(training_dirs))
-            label[index] = 1.0
-            labels.append(label)
-            filebase = os.path.basename(file)
-            ids.append(filebase)
-            cls.append(category)
+            images, ids, labels, cls = load_image(
+                file, image_size, index,
+                num_files, images, ids,
+                labels, cls, category
+            )
 
     images = np.array(images)
     labels = np.array(labels)
