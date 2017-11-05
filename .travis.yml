@@ -1,9 +1,12 @@
 language: python
 python:
   - "3.4"
+env:
+  - PYTHONPATH=$PYTHONPATH:$(pwd)
 install:
   - pip install -r requirements.txt
 script:
+  - cd test
   - pytest
 notifications:
   email: false
