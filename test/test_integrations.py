@@ -10,7 +10,7 @@ def test_train(capfd):
 
     testargs = [
         "main/run.py",
-        "test/resources/images/training",
+        "resources/images/training",
         "-m", "train",
         "-d", model_path,
         "-i", "1",
