@@ -2,6 +2,7 @@ language: python
 python:
   - "3.4"
   - "3.6"
+  - "nightly"
 env:
   - PYTHONPATH=$PYTHONPATH:$(pwd)
 install:
@@ -9,5 +10,8 @@ install:
 script:
   - cd test
   - pytest
+matrix:
+  allow_failures:
+    - python: "nightly"
 notifications:
   email: false
