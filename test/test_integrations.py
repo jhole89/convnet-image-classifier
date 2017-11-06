@@ -6,7 +6,7 @@ import os
 
 def test_train(capfd):
 
-    model_path = "test/resources/model"
+    model_path = "resources/model"
 
     testargs = [
         "main/run.py",
