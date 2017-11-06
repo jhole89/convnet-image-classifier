@@ -6,7 +6,8 @@ from main.convnet import ConvNet
 import logging
 import os
 
-if __name__ == '__main__':
+
+def run_app():
 
     main_parser = MainParser().register_args()
     args = main_parser.parse_args()
@@ -38,5 +39,10 @@ if __name__ == '__main__':
 
     else:
         model = ConvNet(model_dir.path, image_dir.path, img_size, channels, filter_size, batch_size=1)
-        prediction = model.predict()
+        prediction = model.predict(num_trained_classes=2)
         logging.info("Prediction: {}, Actual: {}")
+
+
+if __name__ == '__main__':
+
+    run_app()

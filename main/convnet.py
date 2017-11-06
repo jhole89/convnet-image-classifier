@@ -262,16 +262,14 @@ class ConvNet:
                                        test_feed_dict={x: x_test_batch, y_true: y_test_batch, keep_prob: 1.0},
                                        checkpoint_path=self.checkpoint_full_path)
 
-    def predict(self):
+    def predict(self, num_trained_classes):
 
         data, category_ref = read_img_sets(self.image_dir, self.img_size)
 
         flat_img_size = self._flat_img_shape()
 
-        num_classes = len(category_ref)
-
-        x, y_true, keep_prob = self._variables(flat_img_size, num_classes)
-        logits = self._model(x, keep_prob, num_classes=num_classes)
+        x, y_true, keep_prob = self._variables(flat_img_size, num_trained_classes)
+        logits = self._model(x, keep_prob, num_classes=num_trained_classes)
         predict_op = self._softmax(logits)
 
         with tf.Session() as sess:
