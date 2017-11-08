@@ -33,14 +33,14 @@ def run_app():
 
         model_dir.create()
 
-        model = ConvNet(model_dir.path, image_dir.path, img_size, channels, filter_size, batch_size=args.batch_size)
+        model = ConvNet(model_dir, image_dir, img_size, channels, filter_size, batch_size=args.batch_size)
 
         model.train(training_epochs=args.iterations)
 
     else:
-        model = ConvNet(model_dir.path, image_dir.path, img_size, channels, filter_size, batch_size=1)
-        prediction = model.predict(num_trained_classes=2)
-        logging.info("Prediction: {}, Actual: {}")
+        model = ConvNet(model_dir, image_dir, img_size, channels, filter_size, batch_size=1)
+        prediction = model.predict()
+        logging.info("Prediction: {}".format(prediction))
 
 
 if __name__ == '__main__':

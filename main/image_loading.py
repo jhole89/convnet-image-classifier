@@ -7,7 +7,7 @@ from sklearn.utils import shuffle
 from main.dataset import DataSet
 
 
-def load_image(image_path, image_size, file_index, num_files,
+def load_image(image_path, image_size, file_index=0, num_files=1,
                images=None, ids=None, labels=None, cls=None, category=None):
 
     if images is None:
@@ -51,12 +51,11 @@ def load_data(image_dir, image_size):
     ids = []
     cls = []
 
-    image_dir = os.path.abspath(image_dir)
     binary_cls_map = {}
 
-    logging.info("Loading resource: Images [%s]", image_dir)
+    logging.info("Loading resource: Images [%s]", image_dir.path)
 
-    training_dirs = os.listdir(image_dir)
+    training_dirs = os.listdir(image_dir.path)
     num_files = len(training_dirs)
 
     for category in training_dirs:
@@ -65,7 +64,7 @@ def load_data(image_dir, image_size):
 
         logging.debug("Loading resource: %s images [Index: %s]" % (category, index))
 
-        path = os.path.join(image_dir, category, '*g')
+        path = os.path.join(image_dir.path, category, '*g')
         file_list = glob.glob(path)
 
         for file in file_list:
@@ -75,11 +74,6 @@ def load_data(image_dir, image_size):
                 labels, cls, category
             )
 
-    images = np.array(images)
-    labels = np.array(labels)
-    ids = np.array(ids)
-    cls = np.array(cls)
-
     return images, labels, ids, cls, binary_cls_map
 
 
@@ -88,9 +82,19 @@ def read_img_sets(image_dir, image_size, validation_size=0):
         pass
 
     data_sets = DataSets()
+    cls_map = None
 
-    images, labels, ids, cls, cls_map = load_data(image_dir, image_size)
-    images, labels, ids, cls = shuffle(images, labels, ids, cls)
+    if type(image_dir).__name__ == 'File':
+        images, ids, labels, cls = load_image(image_dir.path, image_size)
+
+    else:
+        images, labels, ids, cls, cls_map = load_data(image_dir, image_size)
+        images, labels, ids, cls = shuffle(images, labels, ids, cls)
+
+    images = np.array(images)
+    labels = np.array(labels)
+    ids = np.array(ids)
+    cls = np.array(cls)
 
     if isinstance(validation_size, float):
         validation_size = int(validation_size * images.shape[0])

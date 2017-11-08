@@ -11,9 +11,9 @@ class ConvNet:
         self.model_dir = model_dir
         self.image_dir = image_dir
 
-        self.checkpoint_dir = os.path.abspath(os.path.join(model_dir, 'tensorflow', 'model'))
+        self.checkpoint_dir = os.path.abspath(os.path.join(model_dir.path, 'tensorflow', 'model'))
         self.checkpoint_full_path = os.path.join(self.checkpoint_dir, 'model.ckpt')
-        self.log_dir = os.path.join(os.path.abspath(self.model_dir), 'tensorflow', 'logs', 'cnn_with_summaries')
+        self.log_dir = os.path.join(self.model_dir.path, 'tensorflow', 'logs', 'cnn_with_summaries')
 
         self.img_size = img_size
         self.neurons = 2 * img_size
@@ -234,6 +234,10 @@ class ConvNet:
         training_op = self._optimizer(cost)
         accuracy = self._calculate_accuracy(logits, y_true)
 
+        tf.add_to_collection('x', x)
+        tf.add_to_collection('keep_prob', keep_prob)
+        tf.add_to_collection('logits', logits)
+
         summary_op = tf.summary.merge_all()
         saver = tf.train.Saver()
         writer = tf.summary.FileWriter(self.log_dir, graph=tf.get_default_graph())
@@ -264,23 +268,25 @@ class ConvNet:
                                        test_feed_dict={x: x_test_batch, y_true: y_test_batch, keep_prob: 1.0},
                                        checkpoint_path=self.checkpoint_full_path)
 
-    def predict(self, num_trained_classes):
+    def predict(self):
 
-        data, category_ref = read_img_sets(self.image_dir, self.img_size)
+        data, _ = read_img_sets(self.image_dir, self.img_size)
 
         flat_img_size = self._flat_img_shape()
-
-        x, y_true, keep_prob = self._variables(flat_img_size, num_trained_classes)
-        logits = self._model(x, keep_prob, num_classes=num_trained_classes)
-        predict_op = self._softmax(logits)
 
         with tf.Session() as sess:
 
             self._restore_or_initialize(sess)
+
+            x = tf.get_collection('x')[0]
+            keep_prob = tf.get_collection('keep_prob')[0]
+            logits = tf.get_collection('logits')[0]
+
+            predict_op = self._softmax(logits)
 
             x_predict_batch, y_predict_batch, _, cls_predict_batch = data.train.next_batch(batch_size=1)
             x_predict_batch = x_predict_batch.reshape(self.batch_size, flat_img_size)
 
             prediction = sess.run([tf.argmax(predict_op, dimension=1)], feed_dict={x: x_predict_batch, keep_prob: 1.0})
 
-            return category_ref[prediction[0][0]], cls_predict_batch[0]
+            return prediction[0][0]
