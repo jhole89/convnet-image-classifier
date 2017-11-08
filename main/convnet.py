@@ -204,11 +204,13 @@ class ConvNet:
 
         return accuracy
 
-    def _restore_or_initialize(self, session, saver):
+    def _restore_or_initialize(self, session):
 
         ckpt = tf.train.get_checkpoint_state(self.checkpoint_dir)
 
         if ckpt:
+            saver = tf.train.import_meta_graph('{}.meta'.format(ckpt.model_checkpoint_path))
+
             logging.debug("Loading ConvNet model: [%s]", self.checkpoint_full_path)
             saver.restore(session, ckpt.model_checkpoint_path)
 
@@ -238,7 +240,7 @@ class ConvNet:
 
         with tf.Session() as sess:
 
-            self._restore_or_initialize(sess, saver)
+            self._restore_or_initialize(sess)
 
             for epoch in range(training_epochs):
 
@@ -274,8 +276,7 @@ class ConvNet:
 
         with tf.Session() as sess:
 
-            saver = tf.train.Saver()
-            self._restore_or_initialize(sess, saver)
+            self._restore_or_initialize(sess)
 
             x_predict_batch, y_predict_batch, _, cls_predict_batch = data.train.next_batch(batch_size=1)
             x_predict_batch = x_predict_batch.reshape(self.batch_size, flat_img_size)
