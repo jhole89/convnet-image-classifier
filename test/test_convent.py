@@ -58,9 +58,9 @@ def test_convnet(model_dir, image_dir, image_size):
 
     assert net.model_dir == model_dir
     assert net.image_dir == image_dir
-    assert net.checkpoint_dir == os.path.join(model_dir, 'tensorflow', 'model')
-    assert net.checkpoint_full_path == os.path.join(model_dir, 'tensorflow', 'model', 'model.ckpt')
-    assert net.log_dir == os.path.join(model_dir, 'tensorflow', 'logs', 'cnn_with_summaries')
+    assert net.checkpoint_dir == os.path.join(model_dir.path, 'tensorflow', 'model')
+    assert net.checkpoint_full_path == os.path.join(model_dir.path, 'tensorflow', 'model', 'model.ckpt')
+    assert net.log_dir == os.path.join(model_dir.path, 'tensorflow', 'logs', 'cnn_with_summaries')
     assert net.img_size == image_size
     assert net.neurons == 2 * image_size
     assert net.channels == 3
