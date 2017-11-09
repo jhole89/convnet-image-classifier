@@ -7,10 +7,11 @@ class File:
 
     def __init__(self, path):
         self.path = os.path.abspath(path)
+        self._class_name = type(self).__name__
 
     @property
-    def _class_name(self):
-        return self.__class__.__name__
+    def class_name(self):
+        return self._class_name
 
     def remove(self):
 

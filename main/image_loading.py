@@ -84,7 +84,7 @@ def read_img_sets(image_dir, image_size, validation_size=0):
     data_sets = DataSets()
     cls_map = None
 
-    if type(image_dir).__name__ == 'File':
+    if image_dir.class_name == 'File':
         images, ids, labels, cls = load_image(image_dir.path, image_size)
 
     else:
