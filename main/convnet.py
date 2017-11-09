@@ -2,6 +2,8 @@ import os
 import logging
 import tensorflow as tf
 from main.image_loading import read_img_sets
+from main.file import File
+import json
 
 
 class ConvNet:
@@ -224,6 +226,18 @@ class ConvNet:
 
         data, category_ref = read_img_sets(self.image_dir, self.img_size, validation_size=.2)
 
+        if category_ref is not None:
+
+            category_meta = File(
+                os.path.join(
+                    self.model_dir.path,
+                    'trained_categories.meta'
+                )
+            )
+
+            with open(category_meta.path, 'w') as meta_file:
+                json.dump(category_ref, meta_file)
+
         flat_img_size = self._flat_img_shape()
 
         num_classes = len(category_ref)
@@ -289,4 +303,23 @@ class ConvNet:
 
             prediction = sess.run([tf.argmax(predict_op, dimension=1)], feed_dict={x: x_predict_batch, keep_prob: 1.0})
 
-            return prediction[0][0]
+            try:
+
+                categories_meta = File(
+                    os.path.join(
+                        self.model_dir.path,
+                        'trained_categories.meta'
+                    )
+                )
+
+                with open(categories_meta.path) as categories_meta:
+                    trained_categories = json.load(categories_meta)
+
+                prediction = trained_categories[str(prediction[0][0])]
+
+            except IOError:
+                logging.critical(
+                    "Cannot load trained_categories.meta. Prediction output will be binary class index.")
+                prediction = str(prediction[0][0])
+
+            return prediction
