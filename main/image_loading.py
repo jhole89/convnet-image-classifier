@@ -58,20 +58,30 @@ def load_data(image_dir, image_size):
     training_dirs = os.listdir(image_dir.path)
     num_files = len(training_dirs)
 
-    for category in training_dirs:
-        index = training_dirs.index(category)
-        binary_cls_map[index] = category
+    for file_or_dir in training_dirs:
 
-        logging.debug("Loading resource: %s images [Index: %s]" % (category, index))
+        path = os.path.join(image_dir.path, file_or_dir)
 
-        path = os.path.join(image_dir.path, category, '*g')
-        file_list = glob.glob(path)
+        if os.path.isdir(path):
+            index = training_dirs.index(file_or_dir)
+            binary_cls_map[index] = file_or_dir
+            logging.debug("Loading resource: {} images [Index: {}]".format(file_or_dir, index))
+            path = os.path.join(path, '*g')
+            file_list = glob.glob(path)
+
+        elif os.path.isfile(path):
+            index = 0
+            file_list = [path]
+
+        else:
+            logging.error("Passed path {} is neither file or directory".format(file_or_dir))
+            raise ValueError
 
         for file in file_list:
             images, ids, labels, cls = load_image(
                 file, image_size, index,
                 num_files, images, ids,
-                labels, cls, category
+                labels, cls, file_or_dir
             )
 
     return images, labels, ids, cls, binary_cls_map
