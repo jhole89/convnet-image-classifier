@@ -39,8 +39,8 @@ def run_app():
 
     else:
         model = ConvNet(model_dir, image_dir, img_size, channels, filter_size, batch_size=1)
-        prediction = model.predict()
-        logging.info("Prediction: {}".format(prediction))
+        predictions = model.predict()
+        [logging.info("File: {} --- Prediction: {}".format(*prediction)) for prediction in predictions]
 
 
 if __name__ == '__main__':

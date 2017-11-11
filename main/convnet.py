@@ -298,13 +298,9 @@ class ConvNet:
 
             predict_op = self._softmax(logits)
 
-            x_predict_batch, y_predict_batch, _, cls_predict_batch = data.train.next_batch(batch_size=1)
-            x_predict_batch = x_predict_batch.reshape(self.batch_size, flat_img_size)
-
-            prediction = sess.run([tf.argmax(predict_op, dimension=1)], feed_dict={x: x_predict_batch, keep_prob: 1.0})
+            batch_count = int(data.train.num_examples)
 
             try:
-
                 categories_meta = File(
                     os.path.join(
                         self.model_dir.path,
@@ -315,11 +311,26 @@ class ConvNet:
                 with open(categories_meta.path) as categories_meta:
                     trained_categories = json.load(categories_meta)
 
-                prediction = trained_categories[str(prediction[0][0])]
-
             except IOError:
                 logging.critical(
                     "Cannot load trained_categories.meta. Prediction output will be binary class index.")
-                prediction = str(prediction[0][0])
+                trained_categories = None
 
-            return prediction
+            for i in range(batch_count):
+
+                x_predict_batch, y_predict_batch, _, cls_predict_batch = data.train.next_batch(batch_size=1)
+                x_predict_batch = x_predict_batch.reshape(self.batch_size, flat_img_size)
+
+                prediction = sess.run(
+                    [tf.argmax(predict_op, dimension=1)],
+                    feed_dict={
+                        x: x_predict_batch,
+                        keep_prob: 1.0})[0][0]
+
+                if trained_categories:
+                    prediction = trained_categories[str(prediction)]
+
+                else:
+                    prediction = str(prediction)
+
+                yield data.train.ids[i], prediction
