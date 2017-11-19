@@ -7,17 +7,17 @@ import os
 
 @pytest.fixture(scope='session')
 def image_dir():
-    return Directory(os.path.join('resources', 'images', 'training'))
+    return Directory(os.path.join('test', 'resources', 'images', 'training'))
 
 
 @pytest.fixture(scope='session')
 def prediction_path():
-    return os.path.abspath(os.path.join('resources', 'images', 'prediction', '1794225511_0a7ba68969.jpg'))
+    return os.path.abspath(os.path.join('test', 'resources', 'images', 'prediction', '1794225511_0a7ba68969.jpg'))
 
 
 @pytest.fixture(scope='session')
 def model_dir():
-    return Directory(os.path.join('resources', 'model'))
+    return Directory(os.path.join('test', 'resources', 'model'))
 
 
 @pytest.fixture(scope='session')

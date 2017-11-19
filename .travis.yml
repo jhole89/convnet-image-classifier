@@ -7,11 +7,10 @@ env:
   - PYTHONPATH=$PYTHONPATH:$(pwd)
 install:
   - pip install -r requirements.txt
-  - pip install pep8
+  - pip install pycodestyle
 script:
-  - pep8 . --max-line-length=119
-  - cd test
-  - pytest
+  - pycodestyle . --max-line-length=119
+  - python -m pytest
 matrix:
   fast_finish: true
   allow_failures:
