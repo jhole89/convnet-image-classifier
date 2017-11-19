@@ -10,10 +10,12 @@ install:
   - pip install pycodestyle
 script:
   - pycodestyle . --max-line-length=119
-  - python -m pytest
+  - python -m pytest --cov-report html --cov main
 matrix:
   fast_finish: true
   allow_failures:
     - python: "nightly"
 notifications:
   email: false
+after_success:
+  - coveralls
