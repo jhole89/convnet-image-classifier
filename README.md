@@ -109,6 +109,21 @@ short or long form:
 | -c | --clean | clean run flag (training only) | -c |
 ```
 
+### Tensorboard
+
+As convnet training can take a long time depending on local resources of the
+CPU/GPU it can be helpful to visualise the training rate, accuracy, and cost.
+This can be achieved using TensorBoard, which comes packed with TensorFlow.
+To activate TensorBoard run:
+
+```
+tensorboard --logdir=<model_dir>/tensorflow/cnn/logs/cnn_with_summaries
+```
+
+TensorBoard can now be accessed via a web browser at 127.0.0.1:6006
+where a number of metrics can be observed. For more on Tensorboard please
+read the Tensorboard [docs.](https://www.tensorflow.org/get_started/summaries_and_tensorboard)
+
 ## Test Coverage and Coding Style
 
 This project uses [Travis-CI](https://travis-ci.org/jhole89/convnet-image-classifier) for our CI/CD
