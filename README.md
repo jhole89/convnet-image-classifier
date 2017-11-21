@@ -50,10 +50,10 @@ convnet-image-classifier
             │...
 ```
 
-With such a layout the most basic convnet can now be trained using the command:
+With such a layout the convnet can now be trained using the command:
 
 ```
-$ python path/to/training/images -m train
+$ python main/run.py path/to/training/images -m train
 ```
 
 If correct you should see logs similar to the following:
@@ -73,8 +73,40 @@ If correct you should see logs similar to the following:
 ```
 
 #### Predicting
+
+With the convnet trained it is possible to be used for image classification
+when the image is unknown. This can be done over a single image file or a
+directory of images using the commands:
+
 ```
-$ python path/to/images -m predict
+$ python main/run.py path/to/images -m predict
+$ python main/run.py path/to/image/file.jpg -m predict
+```
+
+Note that if a model directory was specified during the training stage, this same
+model directory should also be specified here. For more on optional arguments
+see the section below.
+
+If correct you should see logs similar to the following:
+```
+2017-11-21 21:37:47,049 INFO Loading resource: Images [convet-image-classifier/test/resources/images/prediction]
+2017-11-21 21:37:48,566 INFO File: 437202643_e32ce43baa.jpg --- Prediction: dog
+2017-11-21 21:37:48,595 INFO File: 1794225511_0a7ba68969.jpg --- Prediction: dog
+```
+
+#### Optional Command Line Parameters
+There are a number of arguments that can be used when training or predicting.
+These all have default values so are optional, and can be passed using either
+short or long form:
+```
+| short | long | desc | example |
+|:---:|:---:|:---|:---|
+| -m | --mode | train or predict mode | -m train |
+| -d | --model_dir | directory to store model | -d tmp |
+| -i | --iterations | num. of iterations (training only) | -i 2000 |
+| -b | --batch_size | num. images per batch | -b 100 |
+| -v | --verbosity | log verbosity level | -v info |
+| -c | --clean | clean run flag (training only) | -c |
 ```
 
 ## Test Coverage and Coding Style
@@ -83,6 +115,3 @@ This project uses [Travis-CI](https://travis-ci.org/jhole89/convnet-image-classi
 to run test coverage (pytest) and style checks (pycodestyle) against every new commit and against
 the nightly CPython build to ensure we are always aligned with the latest CPython dev builds.
 Build status is shown at the top of this README.
-
-
-## Acknowledgments
