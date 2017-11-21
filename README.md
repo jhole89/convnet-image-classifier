@@ -98,7 +98,7 @@ If correct you should see logs similar to the following:
 There are a number of arguments that can be used when training or predicting.
 These all have default values so are optional, and can be passed using either
 short or long form:
-```
+
 | short | long | desc | example |
 |:---:|:---:|:---|:---|
 | -m | --mode | train or predict mode | -m train |
@@ -107,7 +107,6 @@ short or long form:
 | -b | --batch_size | num. images per batch | -b 100 |
 | -v | --verbosity | log verbosity level | -v info |
 | -c | --clean | clean run flag (training only) | -c |
-```
 
 ### Tensorboard
 
