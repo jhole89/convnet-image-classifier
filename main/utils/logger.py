@@ -4,7 +4,7 @@ import tensorflow as tf
 
 class Logger:
 
-    def __init__(self, log_level):
+    def __init__(self, log_level='INFO'):
         self.log_level = log_level.upper()
         self.format = '%(asctime)s %(levelname)s %(message)s'
 
