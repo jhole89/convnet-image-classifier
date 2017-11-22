@@ -198,8 +198,8 @@ class ConvNet:
     def _calculate_accuracy(self, logits, y_true):
 
         with tf.name_scope('accuracy'):
-            y_true_cls = tf.argmax(y_true, dimension=1)
-            y_pred_cls = tf.argmax(self._softmax(logits), dimension=1)
+            y_true_cls = tf.argmax(y_true, axis=1)
+            y_pred_cls = tf.argmax(self._softmax(logits), axis=1)
             correct_prediction = tf.equal(y_pred_cls, y_true_cls)
             accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
             tf.summary.scalar('accuracy', accuracy)
@@ -322,7 +322,7 @@ class ConvNet:
                 x_predict_batch = x_predict_batch.reshape(self.batch_size, flat_img_size)
 
                 prediction = sess.run(
-                    [tf.argmax(predict_op, dimension=1)],
+                    [tf.argmax(predict_op, axis=1)],
                     feed_dict={
                         x: x_predict_batch,
                         keep_prob: 1.0})[0][0]
