@@ -47,7 +47,7 @@ def evaluate_tfmethod(*args, method, dtype_code, op_type):
 
 def evaluate_tensor(tensor, dtype_code, op_type):
 
-    assert type(tensor) == tf.Tensor
+    assert isinstance(tensor, tf.Tensor)
     assert tensor.dtype == tf.DType(dtype_code)
     assert tensor.op.type == op_type
 
@@ -77,7 +77,7 @@ def test_weight_variable(convnet):
 
     tf_weight = convnet._weight_variable(shape=(20, 2))
 
-    assert type(tf_weight) == tf.Variable
+    assert isinstance(tf_weight, tf.Variable)
     assert tf_weight.dtype == tf.DType(101)
     assert tf_weight.initial_value.op.type == 'Add'
 
@@ -86,7 +86,7 @@ def test_bias_variable(convnet):
 
     tf_bias = convnet._bias_variable(shape=(20, 1))
 
-    assert type(tf_bias) == tf.Variable
+    assert isinstance(tf_bias, tf.Variable)
     assert tf_bias.dtype == tf.DType(101)
     assert tf_bias.initial_value.op.type == 'Const'
 
@@ -167,7 +167,7 @@ def test_optimizer(convnet, logits, variables):
 
     optimizer = convnet._optimizer(cost)
 
-    assert type(optimizer) == tf.Operation
+    assert isinstance(optimizer, tf.Operation)
     assert optimizer.type == 'NoOp'
     assert optimizer.name == 'train/Adam'
 
