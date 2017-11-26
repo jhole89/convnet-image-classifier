@@ -1,8 +1,7 @@
 # ConvNet Image Classifier
-**Master:** [![Build Status](https://travis-ci.org/jhole89/convnet-image-classifier.svg?branch=master)](https://travis-ci.org/jhole89/convnet-image-classifier)
-[![Coverage Status](https://coveralls.io/repos/github/jhole89/convnet-image-classifier/badge.svg?branch=master)](https://coveralls.io/github/jhole89/convnet-image-classifier?branch=master)
-**Develop:** [![Build Status](https://travis-ci.org/jhole89/convnet-image-classifier.svg?branch=develop)](https://travis-ci.org/jhole89/convnet-image-classifier)
-[![Coverage Status](https://coveralls.io/repos/github/jhole89/convnet-image-classifier/badge.svg?branch=develop)](https://coveralls.io/github/jhole89/convnet-image-classifier?branch=develop)
+[![Build Status](https://travis-ci.org/jhole89/convnet-image-classifier.svg?branch=master)](https://travis-ci.org/jhole89/convnet-image-classifier)
+[![codecov](https://codecov.io/gh/jhole89/convnet-image-classifier/branch/master/graph/badge.svg)](https://codecov.io/gh/jhole89/convnet-image-classifier)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/ae90a7e9a8554bf08eee4354043250b3)](https://www.codacy.com/app/jhole89/convnet-image-classifier?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jhole89/convnet-image-classifier&amp;utm_campaign=Badge_Grade)
 
 
 ## Getting Started
