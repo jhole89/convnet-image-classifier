@@ -23,8 +23,7 @@ def weights(convnet, image_size):
 
 @pytest.fixture(scope='module')
 def variables(convnet):
-    flat_img_size = convnet._flat_img_shape()
-    return convnet._variables(flat_img_size, num_classes=2)
+    return convnet._variables(convnet.flat_img_shape, num_classes=2)
 
 
 @pytest.fixture(scope='module')
@@ -66,11 +65,16 @@ def test_convnet(model_dir, image_dir, image_size):
     assert net.channels == 3
     assert net.filter_size == 3
     assert net.batch_size == 2
+    assert net._flat_img_shape == image_size * image_size * 3
 
 
-def test_flat_img_shape(convnet, image_size):
+def test_flat_img_shape(convnet):
 
-    assert convnet._flat_img_shape() == image_size * image_size * 3
+    assert convnet.flat_img_shape == convnet._flat_img_shape
+
+    convnet.flat_img_shape = 0
+
+    assert convnet.flat_img_shape == 0
 
 
 def test_weight_variable(convnet):
@@ -93,8 +97,7 @@ def test_bias_variable(convnet):
 
 def test_variables(convnet):
 
-    flat_img_size = convnet._flat_img_shape()
-    x, y_true, keep_prob = convnet._variables(flat_img_size, num_classes=2)
+    x, y_true, keep_prob = convnet._variables(convnet.flat_img_shape, num_classes=2)
 
     evaluate_tensor(tensor=x, dtype_code=1, op_type='Placeholder')
     evaluate_tensor(tensor=y_true, dtype_code=1, op_type='Placeholder')
