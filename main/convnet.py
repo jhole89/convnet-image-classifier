@@ -23,9 +23,15 @@ class ConvNet:
         self.filter_size = filter_size
 
         self.batch_size = batch_size
+        self._flat_img_shape = self.img_size * self.img_size * self.channels
 
-    def _flat_img_shape(self):
-        return self.img_size * self.img_size * self.channels
+    @property
+    def flat_img_shape(self):
+        return self._flat_img_shape
+
+    @flat_img_shape.setter
+    def flat_img_shape(self, value):
+        self._flat_img_shape = value
 
     @staticmethod
     def _weight_variable(shape):
@@ -110,7 +116,7 @@ class ConvNet:
             y_true = tf.placeholder(
                 tf.float32, shape=[None, num_classes], name='y_true')
 
-            keep_prob = tf.placeholder(tf.float32)
+            keep_prob = tf.placeholder(tf.float32, name='keep_prob')
 
         return x, y_true, keep_prob
 
@@ -198,15 +204,15 @@ class ConvNet:
     def _calculate_accuracy(self, logits, y_true):
 
         with tf.name_scope('accuracy'):
-            y_true_cls = tf.argmax(y_true, dimension=1)
-            y_pred_cls = tf.argmax(self._softmax(logits), dimension=1)
+            y_true_cls = tf.argmax(y_true, axis=1)
+            y_pred_cls = tf.argmax(self._softmax(logits), axis=1)
             correct_prediction = tf.equal(y_pred_cls, y_true_cls)
             accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
             tf.summary.scalar('accuracy', accuracy)
 
         return accuracy
 
-    def _restore_or_initialize(self, session):
+    def _restore_or_initialize(self, session, category_ref):
 
         ckpt = tf.train.get_checkpoint_state(self.checkpoint_dir)
 
@@ -216,11 +222,53 @@ class ConvNet:
             logging.debug("Loading ConvNet model: [%s]", self.checkpoint_full_path)
             saver.restore(session, ckpt.model_checkpoint_path)
 
+            x, y_true, keep_prob, logits, cost, training_op, accuracy = self._restore_tensors()
+
         else:
             logging.warning("Unable to load ConvNet model: [%s]", self.checkpoint_full_path)
 
             os.makedirs(self.checkpoint_dir)
+
+            x, y_true, keep_prob, logits, cost, training_op, accuracy = self._initialise_tensors(category_ref)
             tf.global_variables_initializer().run()
+
+        tf.add_to_collection('x', x)
+        tf.add_to_collection('y_true', y_true)
+        tf.add_to_collection('keep_prob', keep_prob)
+
+        tf.add_to_collection('logits', logits)
+        tf.add_to_collection('cost', cost)
+        tf.add_to_collection('training_op', training_op)
+        tf.add_to_collection('accuracy', accuracy)
+
+        return x, y_true, keep_prob, logits, cost, training_op, accuracy
+
+    def _initialise_tensors(self, category_ref):
+
+        num_classes = len(category_ref)
+
+        x, y_true, keep_prob = self._variables(self.flat_img_shape, num_classes)
+
+        logits = self._model(x, keep_prob, num_classes=num_classes)
+        cost = self._calculate_cost(logits, y_true)
+        training_op = self._optimizer(cost)
+        accuracy = self._calculate_accuracy(logits, y_true)
+
+        return x, y_true, keep_prob, logits, cost, training_op, accuracy
+
+    @staticmethod
+    def _restore_tensors():
+
+        x = tf.get_collection(key='x', scope='input')[0]
+        y_true = tf.get_collection(key='y_true', scope='input')[0]
+        keep_prob = tf.get_collection(key='keep_prob', scope='input')[0]
+
+        logits = tf.get_collection(key='logits', scope='Fully_Connected2')[0]
+        cost = tf.get_collection(key='cost', scope='cost')[0]
+        training_op = tf.get_collection(key='training_op', scope='train')[0]
+        accuracy = tf.get_collection(key='accuracy', scope='accuracy')[0]
+
+        return x, y_true, keep_prob, logits, cost, training_op, accuracy
 
     def train(self, training_epochs=50):
 
@@ -238,27 +286,13 @@ class ConvNet:
             with open(category_meta.path, 'w') as meta_file:
                 json.dump(category_ref, meta_file)
 
-        flat_img_size = self._flat_img_shape()
-
-        num_classes = len(category_ref)
-
-        x, y_true, keep_prob = self._variables(flat_img_size, num_classes)
-        logits = self._model(x, keep_prob, num_classes=num_classes)
-        cost = self._calculate_cost(logits, y_true)
-        training_op = self._optimizer(cost)
-        accuracy = self._calculate_accuracy(logits, y_true)
-
-        tf.add_to_collection('x', x)
-        tf.add_to_collection('keep_prob', keep_prob)
-        tf.add_to_collection('logits', logits)
-
-        summary_op = tf.summary.merge_all()
-        saver = tf.train.Saver()
-        writer = tf.summary.FileWriter(self.log_dir, graph=tf.get_default_graph())
-
         with tf.Session() as sess:
 
-            self._restore_or_initialize(sess)
+            x, y_true, keep_prob, logits, cost, training_op, accuracy = self._restore_or_initialize(sess, category_ref)
+
+            summary_op = tf.summary.merge_all()
+            saver = tf.train.Saver()
+            writer = tf.summary.FileWriter(self.log_dir, graph=tf.get_default_graph())
 
             for epoch in range(training_epochs):
 
@@ -266,11 +300,11 @@ class ConvNet:
 
                 for i in range(batch_count):
 
-                    x_batch, y_true_batch, _, cls_batch = data.train.next_batch(self.batch_size)
-                    x_batch = x_batch.reshape(self.batch_size, flat_img_size)
+                    x_batch, y_true_batch, _, _ = data.train.next_batch(self.batch_size)
+                    x_batch = x_batch.reshape(self.batch_size, self.flat_img_shape)
 
-                    x_test_batch, y_test_batch, _, cls_test_batch = data.test.next_batch(self.batch_size)
-                    x_test_batch = x_test_batch.reshape(self.batch_size, flat_img_size)
+                    x_test_batch, y_test_batch, _, _ = data.test.next_batch(self.batch_size)
+                    x_test_batch = x_test_batch.reshape(self.batch_size, self.flat_img_shape)
 
                     _, summary = sess.run([training_op, summary_op],
                                           feed_dict={x: x_batch, y_true: y_true_batch, keep_prob: 0.5})
@@ -286,43 +320,37 @@ class ConvNet:
 
         data, _ = read_img_sets(self.image_dir, self.img_size)
 
-        flat_img_size = self._flat_img_shape()
+        try:
+            categories_meta = File(
+                os.path.join(
+                    self.model_dir.path,
+                    'trained_categories.meta'
+                )
+            )
+
+            with open(categories_meta.path) as categories_meta:
+                trained_categories = json.load(categories_meta)
+
+        except IOError:
+            logging.critical(
+                "Cannot load trained_categories.meta. Prediction output will be binary class index.")
+            trained_categories = None
 
         with tf.Session() as sess:
 
-            self._restore_or_initialize(sess)
-
-            x = tf.get_collection('x')[0]
-            keep_prob = tf.get_collection('keep_prob')[0]
-            logits = tf.get_collection('logits')[0]
+            x, _, keep_prob, logits, _, _, _, = self._restore_or_initialize(sess, None)
 
             predict_op = self._softmax(logits)
 
             batch_count = int(data.train.num_examples)
 
-            try:
-                categories_meta = File(
-                    os.path.join(
-                        self.model_dir.path,
-                        'trained_categories.meta'
-                    )
-                )
-
-                with open(categories_meta.path) as categories_meta:
-                    trained_categories = json.load(categories_meta)
-
-            except IOError:
-                logging.critical(
-                    "Cannot load trained_categories.meta. Prediction output will be binary class index.")
-                trained_categories = None
-
             for i in range(batch_count):
 
-                x_predict_batch, y_predict_batch, _, cls_predict_batch = data.train.next_batch(batch_size=1)
-                x_predict_batch = x_predict_batch.reshape(self.batch_size, flat_img_size)
+                x_predict_batch, _, _, _ = data.train.next_batch(batch_size=1)
+                x_predict_batch = x_predict_batch.reshape(self.batch_size, self.flat_img_shape)
 
                 prediction = sess.run(
-                    [tf.argmax(predict_op, dimension=1)],
+                    [tf.argmax(predict_op, axis=1)],
                     feed_dict={
                         x: x_predict_batch,
                         keep_prob: 1.0})[0][0]

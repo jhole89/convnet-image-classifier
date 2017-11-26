@@ -23,8 +23,7 @@ def weights(convnet, image_size):
 
 @pytest.fixture(scope='module')
 def variables(convnet):
-    flat_img_size = convnet._flat_img_shape()
-    return convnet._variables(flat_img_size, num_classes=2)
+    return convnet._variables(convnet.flat_img_shape, num_classes=2)
 
 
 @pytest.fixture(scope='module')
@@ -47,7 +46,7 @@ def evaluate_tfmethod(*args, method, dtype_code, op_type):
 
 def evaluate_tensor(tensor, dtype_code, op_type):
 
-    assert type(tensor) == tf.Tensor
+    assert isinstance(tensor, tf.Tensor)
     assert tensor.dtype == tf.DType(dtype_code)
     assert tensor.op.type == op_type
 
@@ -66,18 +65,23 @@ def test_convnet(model_dir, image_dir, image_size):
     assert net.channels == 3
     assert net.filter_size == 3
     assert net.batch_size == 2
+    assert net._flat_img_shape == image_size * image_size * 3
 
 
-def test_flat_img_shape(convnet, image_size):
+def test_flat_img_shape(convnet):
 
-    assert convnet._flat_img_shape() == image_size * image_size * 3
+    assert convnet.flat_img_shape == convnet._flat_img_shape
+
+    convnet.flat_img_shape = 0
+
+    assert convnet.flat_img_shape == 0
 
 
 def test_weight_variable(convnet):
 
     tf_weight = convnet._weight_variable(shape=(20, 2))
 
-    assert type(tf_weight) == tf.Variable
+    assert isinstance(tf_weight, tf.Variable)
     assert tf_weight.dtype == tf.DType(101)
     assert tf_weight.initial_value.op.type == 'Add'
 
@@ -86,15 +90,14 @@ def test_bias_variable(convnet):
 
     tf_bias = convnet._bias_variable(shape=(20, 1))
 
-    assert type(tf_bias) == tf.Variable
+    assert isinstance(tf_bias, tf.Variable)
     assert tf_bias.dtype == tf.DType(101)
     assert tf_bias.initial_value.op.type == 'Const'
 
 
 def test_variables(convnet):
 
-    flat_img_size = convnet._flat_img_shape()
-    x, y_true, keep_prob = convnet._variables(flat_img_size, num_classes=2)
+    x, y_true, keep_prob = convnet._variables(convnet.flat_img_shape, num_classes=2)
 
     evaluate_tensor(tensor=x, dtype_code=1, op_type='Placeholder')
     evaluate_tensor(tensor=y_true, dtype_code=1, op_type='Placeholder')
@@ -167,7 +170,7 @@ def test_optimizer(convnet, logits, variables):
 
     optimizer = convnet._optimizer(cost)
 
-    assert type(optimizer) == tf.Operation
+    assert isinstance(optimizer, tf.Operation)
     assert optimizer.type == 'NoOp'
     assert optimizer.name == 'train/Adam'
 
