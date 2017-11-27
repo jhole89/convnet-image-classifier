@@ -288,7 +288,7 @@ class ConvNet:
 
         with tf.Session() as sess:
 
-            x, y_true, keep_prob, logits, cost, training_op, accuracy = self._restore_or_initialize(sess, category_ref)
+            x, y_true, keep_prob, _, cost, training_op, accuracy = self._restore_or_initialize(sess, category_ref)
 
             summary_op = tf.summary.merge_all()
             saver = tf.train.Saver()
